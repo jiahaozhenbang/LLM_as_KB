@@ -39,7 +39,6 @@ from sklearn.linear_model import LogisticRegression
 names = [
     "Nearest Neighbors",
     "Linear SVM",
-    "Gaussian Process",
     "Decision Tree",
     "MLP",
     "AdaBoost",
@@ -50,10 +49,9 @@ names = [
 classifiers = [
     KNeighborsClassifier(n_neighbors=3),
     LinearSVC(random_state=0, multi_class='crammer_singer'),
-    GaussianProcessClassifier(1.0 * RBF(1.0), multi_class='one_vs_rest', random_state=0),
     DecisionTreeClassifier(random_state=0),
-    MLPClassifier(random_state=0,),
-    AdaBoostClassifier(DecisionTreeClassifier(max_depth=2), random_state=0,),
+    MLPClassifier(random_state=0,max_iter=1000),
+    AdaBoostClassifier(random_state=0,),
     GaussianNB(),
     LogisticRegression(random_state=0, multi_class='multinomial'),
 ]

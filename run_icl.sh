@@ -24,9 +24,9 @@ array5=(none)
 array6=(dbpedia)
 fi
 
-# for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
+for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
 
-DATASET=sst2
+# DATASET=dbpedia
 
 if [[ "${array1[@]}" =~ "${DATASET}" ]]; then
 NSHOT=32
@@ -41,15 +41,19 @@ NSHOT=2
 else
 NSHOT=1
 fi
+for NSHOT in 0 4 16 64 256 1024; do
+    for SEED in 1 2 3 4 5; do
 
-for SEED in 1 2 3 4 5; do
+    python3 icl.py \
+        --llm_dir ${LLM_DIR} \
+        --dataset ${DATASET} \
+        --data_dir ${DATA_DIR} \
+        --n_train_shot ${NSHOT} \
+        --seed ${SEED} \
+        --output_dir ./output
 
-python3 icl.py \
-    --llm_dir ${LLM_DIR} \
-    --dataset ${DATASET} \
-    --data_dir ${DATA_DIR} \
-    --n_train_shot ${NSHOT} \
-    --seed ${SEED} \
-    --output_dir ./output
+    done
+done
 
 done
+# nohup bash run_icl.sh 2>&1 >icl.log &

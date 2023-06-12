@@ -23,8 +23,8 @@ array5=(none)
 array6=(dbpedia)
 fi
 
-# for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
-DATASET=sst2
+for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
+# DATASET=dbpedia
 
 if [[ "${array1[@]}" =~ "${DATASET}" ]]; then
 N_DEMO_SHOT=32
@@ -53,3 +53,6 @@ for N_TRAIN_SHOT in 4 16 64 256 1024; do
         --output_dir ./output 
     done
 done
+
+done
+# nohup bash run_KB.sh 2>&1 >KB.log &

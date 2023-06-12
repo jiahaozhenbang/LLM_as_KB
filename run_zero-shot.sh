@@ -26,7 +26,7 @@ fi
 
 # for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
 
-DATASET=sst2
+DATASET=dbpedia
 
 if [[ "${array1[@]}" =~ "${DATASET}" ]]; then
 NSHOT=32

@@ -139,7 +139,7 @@ def main():
 
     # inference
     train_data.subsamplebyshot(args.n_train_shot, args.seed)
-    logger.info(f"===== eval on {dev_data.__len__()} dev examples =====")
+    logger.info(f"===== eval on {dev_data.__len__()} dev examples with {args.n_train_shot}-shots =====")
     prompt_prefix = make_prompt(train_data, args.dataset, mode='train')
     dev_labels = []
     dev_pred = []
@@ -156,7 +156,7 @@ def main():
     logger.info(f"Acc: {acc}")
 
     # logging
-    save_results_file = os.path.join(args.output_dir, 'results_icl.csv')
+    save_results_file = os.path.join(args.output_dir, 'results_icl_{}.csv'.format(args.dataset))
     csv_exists = os.path.isfile(save_results_file)
     with open(save_results_file, 'a+', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
