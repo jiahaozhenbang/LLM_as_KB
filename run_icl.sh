@@ -41,18 +41,21 @@ NSHOT=2
 else
 NSHOT=1
 fi
-for NSHOT in 0 4 16 64 256 1024; do
+for CUR_NSHOT in 0 1 2 4 8 16 32; do
+    if (($CUR_NSHOT <= $NSHOT))
+    then
     for SEED in 1 2 3 4 5; do
 
     python3 icl.py \
         --llm_dir ${LLM_DIR} \
         --dataset ${DATASET} \
         --data_dir ${DATA_DIR} \
-        --n_train_shot ${NSHOT} \
+        --n_train_shot ${CUR_NSHOT} \
         --seed ${SEED} \
-        --output_dir ./output
+        --output_dir ./output/icl
 
     done
+    fi
 done
 
 done

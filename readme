@@ -3,11 +3,22 @@
 stage1: only label feature （进行中）
 
 先验实验: data_statistics/zero-shot-self-one-shot.ipynb表明label概率本身就是可以根据类良好区分的
-0611: 调整分类器的参数，重跑sst,dbpedia数据集
-0623:
+0611: 调整分类器的参数，重跑suoyou数据集
 (1)icl结果， 所有数据集跑出来结果，相比于本峰师兄的table8，CB,CR,DBPEDIA,MR低了不少，其余都差不多或者更高；
 (2)KB only label feature: data_statistics/LLM_as_KB.ipynb 从图中可知 1024shot时不同的分类方法的效果在73-83之间，相较于icl的65(benfeng: 68)提升很大，以及方差也相对较小。
 
-stage2: 利用PCA/LDA/t-SNE降维或者fuzzy verbalizers实现挑选特征
+0619:上面的数值对应有问题，重新画了图
+
+
+stage2: 利用PCA/LDA/t-SNE降维或者fuzzy verbalizers实现挑选特征 （进行中）
+
+0612:
+提取gpt2-xl的词表以及embeddings，提取topk(k=10)的token。
+
+0619:使用余弦相似度挑选与label最相似的top k个特征(k=1即为stage1)，也画了图
 
 stage3:直接使用全量的概率分布作为特征
+
+0612: 直接使用全量的概率分布作为特征
+
+0619:目前还没做，因为例如adaboost做数据维度很大的分类器训练很久，具体要参考log

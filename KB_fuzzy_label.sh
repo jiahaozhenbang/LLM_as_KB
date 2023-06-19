@@ -50,10 +50,10 @@ for N_TRAIN_SHOT in 4 8 16 32 64 128 256 512 1024; do
         --data_dir ${DATA_DIR} \
         --n_train_shot ${N_TRAIN_SHOT} \
         --seed ${SEED} \
-        --output_dir ./output/only_label \
-        --feature_choose only_label
+        --output_dir ./output/fuzzy_label \
+        --feature_choose fuzzy_label
     done
 done
 
 done
-# nohup bash run_KB.sh 2>&1 >KB.log &
+# nohup bash KB_fuzzy_label.sh 2>&1 >KB_fuzzy_label.log &

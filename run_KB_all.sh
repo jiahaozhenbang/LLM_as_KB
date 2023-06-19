@@ -23,7 +23,7 @@ array5=(none)
 array6=(dbpedia)
 fi
 
-for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
+for DATASET in  agnews cb cr dbpedia mr rte trec; do
 # DATASET=dbpedia
 
 if [[ "${array1[@]}" =~ "${DATASET}" ]]; then
@@ -42,7 +42,7 @@ fi
 
 # N_TRAIN_SHOT=32
 # SEED=1
-for N_TRAIN_SHOT in 4 8 16 32 64 128 256 512 1024; do
+for N_TRAIN_SHOT in 4 16 64 256 1024; do
     for SEED in 1 2 3 4 5; do
     python3 LLM_as_KB.py \
         --llm_dir ${LLM_DIR} \
@@ -50,10 +50,10 @@ for N_TRAIN_SHOT in 4 8 16 32 64 128 256 512 1024; do
         --data_dir ${DATA_DIR} \
         --n_train_shot ${N_TRAIN_SHOT} \
         --seed ${SEED} \
-        --output_dir ./output/only_label \
-        --feature_choose only_label
+        --output_dir ./output/all \
+        --feature_choose all
     done
 done
 
 done
-# nohup bash run_KB.sh 2>&1 >KB.log &
+# nohup bash run_KB_all.sh 2>&1 >KB_all.log &
