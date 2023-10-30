@@ -102,8 +102,11 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model_config = AutoConfig.from_pretrained(args.llm_dir)
-    model = AutoModelForCausalLM.from_pretrained(args.llm_dir)
-    model.to(device)
+    if "30" in args.llm_dir:
+        model = AutoModelForCausalLM.from_pretrained(args.llm_dir, device_map='auto') # , device_map='auto'
+    else:
+        model = AutoModelForCausalLM.from_pretrained(args.llm_dir)
+        model.to(device)
     model.eval()
 
     if 'gpt2' in args.llm_dir:
@@ -138,6 +141,8 @@ def main():
     dev_data = AutoDataset(dataset_dir, mode='dev')
 
     # inference
+    import time
+    start_time =  time.time()
     train_data.subsamplebyshot(args.n_train_shot, args.seed)
     logger.info(f"===== eval on {dev_data.__len__()} dev examples with {args.n_train_shot}-shots =====")
     prompt_prefix = make_prompt(train_data, args.dataset, mode='train')
@@ -154,6 +159,9 @@ def main():
     dev_correct = [1 if dev_labels[i] == dev_pred[i] else 0 for i in range(len(dev_labels))]
     acc = sum(dev_correct) / len(dev_labels)
     logger.info(f"Acc: {acc}")
+    end_time =  time.time()
+    running_time = end_time - start_time
+    logger.info(f"runtime: {running_time}")
 
     # logging
     save_results_file = os.path.join(args.output_dir, 'results_icl_{}.csv'.format(args.dataset))

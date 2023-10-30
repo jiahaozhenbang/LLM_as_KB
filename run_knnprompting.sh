@@ -23,8 +23,8 @@ array5=(none)
 array6=(dbpedia)
 fi
 
-# for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
-DATASET=sst2
+for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
+# DATASET=sst2
 
 if [[ "${array1[@]}" =~ "${DATASET}" ]]; then
 N_DEMO_SHOT=32
@@ -40,10 +40,42 @@ else
 N_DEMO_SHOT=1
 fi
 
-N_TRAIN_SHOT=1024
 KNN=3
-for SEED in 1 2 3 4 5; do
+# for N_TRAIN_SHOT in 64 128 256 512 1024; do
+# for SEED in 1 2 3 4 5; do
 
+# python3 knn_prompting.py \
+#     --llm_dir ${LLM_DIR} \
+#     --dataset ${DATASET} \
+#     --data_dir ${DATA_DIR} \
+#     --n_train_shot ${N_TRAIN_SHOT} \
+#     --n_demo_shot ${N_DEMO_SHOT} \
+#     --seed ${SEED} \
+#     --output_dir ./output \
+#     --knn ${KNN}
+
+# done
+# done
+
+# for N_TRAIN_SHOT in 4 8 16 32; do
+# for SEED in 1 2 3 4 5; do
+# N_DEMO_SHOT=1
+# python3 knn_prompting.py \
+#     --llm_dir ${LLM_DIR} \
+#     --dataset ${DATASET} \
+#     --data_dir ${DATA_DIR} \
+#     --n_train_shot ${N_TRAIN_SHOT} \
+#     --n_demo_shot ${N_DEMO_SHOT} \
+#     --seed ${SEED} \
+#     --output_dir ./output \
+#     --knn ${KNN}
+
+# done
+# done
+
+for N_TRAIN_SHOT in 4 8 16 32 64 128 256 512 1024; do
+for SEED in 1 2 3 4 5; do
+N_DEMO_SHOT=1
 python3 knn_prompting.py \
     --llm_dir ${LLM_DIR} \
     --dataset ${DATASET} \
@@ -51,7 +83,12 @@ python3 knn_prompting.py \
     --n_train_shot ${N_TRAIN_SHOT} \
     --n_demo_shot ${N_DEMO_SHOT} \
     --seed ${SEED} \
-    --output_dir ./output \
+    --output_dir ./output/knn_demo1 \
     --knn ${KNN}
 
 done
+done
+
+done
+
+# nohup bash run_knnprompting.sh 2>&1 >run_knnprompting.log &

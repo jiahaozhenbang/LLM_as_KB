@@ -1,4 +1,7 @@
 # custom
+*/__pycache__/
+*.npy
+*.csv
 tmp/
 llm/
 data/
