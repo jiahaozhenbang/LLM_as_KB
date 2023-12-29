@@ -41,7 +41,7 @@ NSHOT=2
 else
 NSHOT=1
 fi
-for CUR_NSHOT in  8 32; do
+for CUR_NSHOT in 4 8 16 32; do
     if (($CUR_NSHOT <= $NSHOT))
     then
     for SEED in 1; do

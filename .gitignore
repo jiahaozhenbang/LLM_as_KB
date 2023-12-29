@@ -1,4 +1,6 @@
 # custom
+*.svg
+*.pdf
 */__pycache__/
 *.npy
 *.csv

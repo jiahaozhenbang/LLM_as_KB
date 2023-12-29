@@ -1,7 +1,7 @@
 import pandas as pd 
 import numpy as np
 
-MODEL='gpt2-large'
+MODEL='llama-7B'
 DATASETS = ['sst2', 'subj', 'mpqa', 'agnews', 'cb', 'cr', 'dbpedia', 'mr', 'rte', 'trec']
 MAX_ICL_SHOTS = [16, 8, 32, 2, 2, 8, 1, 8, 4, 8]
 train_shot = 128

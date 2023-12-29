@@ -56,7 +56,37 @@ classifiers = [
     GaussianNB(),
     LogisticRegression(random_state=0, multi_class='multinomial'),
 ]
+def get_nvml_gpu_id(torch_gpu_id):
+    """
+    Remap torch device id to nvml device id, respecting CUDA_VISIBLE_DEVICES. 
 
+    If the latter isn't set return the same id
+    """
+    # if CUDA_VISIBLE_DEVICES is used automagically remap the id since pynvml ignores this env var
+    if "CUDA_VISIBLE_DEVICES" in os.environ:
+        ids = list(map(int, os.environ.get("CUDA_VISIBLE_DEVICES", "").split(",")))
+        return ids[torch_gpu_id] # remap
+    else:
+        return torch_gpu_id
+
+def get_gpu_mem_info(gpu_id=0):
+    """
+    根据显卡 id 获取显存使用信息, 单位 GB
+    :param gpu_id: 显卡 ID
+    :return: total 所有的显存，used 当前使用的显存, free 可使用的显存
+    """
+    import pynvml
+    pynvml.nvmlInit()
+    gpu_id = get_nvml_gpu_id(gpu_id)
+    if gpu_id < 0 or gpu_id >= pynvml.nvmlDeviceGetCount():
+        print(r'gpu_id {} 对应的显卡不存在!'.format(gpu_id))
+        return 0, 0, 0
+    handler = pynvml.nvmlDeviceGetHandleByIndex(gpu_id)
+    meminfo = pynvml.nvmlDeviceGetMemoryInfo(handler)
+    total = round(meminfo.total / 1024 / 1024 / 1024, 2)
+    used = round(meminfo.used / 1024 / 1024 / 1024, 2)
+    free = round(meminfo.free / 1024 / 1024 / 1024, 2)
+    return total, used, free
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"  # To avoid warnings about parallelism in tokenizers
 logger = logging.getLogger(__name__)
@@ -197,14 +227,19 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model_config = AutoConfig.from_pretrained(args.llm_dir)
-    model = AutoModelForCausalLM.from_pretrained(args.llm_dir)
-    model.to(device)
+    if "30" in args.llm_dir :
+        model = AutoModelForCausalLM.from_pretrained(args.llm_dir, device_map='auto') # , device_map='auto'
+    elif "70" in args.llm_dir:
+        model = AutoModelForCausalLM.from_pretrained(args.llm_dir, device_map='auto',load_in_8bit=True)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(args.llm_dir)
+        model.to(device)
     model.eval()
 
     if 'gpt2' in args.llm_dir:
         max_context_len = 1024
     else:
-        max_context_len = 2048
+        max_context_len = 4096 if 'llama2' in args.llm_dir else 2048
 
     # prepare dataset
     if args.dataset == 'sst2':
@@ -269,6 +304,9 @@ def main():
     end_time =  time.time()
     running_time = end_time - start_time
     logger.info(f"running_time: {running_time}s")
+    gpu_mem_total, gpu_mem_used, gpu_mem_free = get_gpu_mem_info(gpu_id=0)
+    logger.info(r'当前显卡显存使用情况：总共 {} GB， 已经使用 {} GB， 剩余 {} GB'
+          .format(gpu_mem_total, gpu_mem_used, gpu_mem_free))
 
 
     # Stage 3: dev set classification

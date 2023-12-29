@@ -43,7 +43,7 @@ fi
 KNN=3
 
 
-for N_TRAIN_SHOT in  8 32 128; do
+for N_TRAIN_SHOT in  4 8 16 32 64 128; do
 for SEED in 1 ; do
 N_DEMO_SHOT=1
 python3 knn_prompting.py \

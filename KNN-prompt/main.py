@@ -144,10 +144,19 @@ def get_fuzzy_label_ids(model, tokenizer, id2verb, k=10):
     # print(similarity.shape)
 
     vocab = [v for v,i in tokenizer.get_vocab().items()]
-
-    fuzzy_label_ids = []
+    
+    label_verb_token_id_candidate_list = []
     for label_verb in id2verb:
-        label_verb_token_id = tokenizer.encode(' ' + label_verb)[-1] # note the space before label word
+        label_verb_token_id_candidate_list.append(list(tokenizer.encode(' ' + label_verb)))
+    min_len = min([len(_e) for _e in label_verb_token_id_candidate_list])
+    for i in range(min_len):
+        label_verb_token_id_list = [_e[i] for _e in label_verb_token_id_candidate_list]
+        if len(set(label_verb_token_id_list)) < len(label_verb_token_id_list):
+            continue
+    assert len(set(label_verb_token_id_list)) == len(label_verb_token_id_list), "no valid label_verb_token_id_list"
+    
+    fuzzy_label_ids = []
+    for label_verb_token_id in label_verb_token_id_list:
         similar_value, similar_id = torch.topk(similarity[label_verb_token_id], k=k)
         # print(label_verb, vocab[label_verb_token_id], list(zip(similar_value.tolist(), [vocab[i] for i in similar_id.tolist()])))
 
@@ -179,8 +188,10 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model_config = AutoConfig.from_pretrained(args.llm_dir)
-    if "30" in args.llm_dir:
+    if "30" in args.llm_dir :
         model = AutoModelForCausalLM.from_pretrained(args.llm_dir, device_map='auto') # , device_map='auto'
+    elif "70" in args.llm_dir:
+        model = AutoModelForCausalLM.from_pretrained(args.llm_dir, device_map='auto',load_in_8bit=True)
     else:
         model = AutoModelForCausalLM.from_pretrained(args.llm_dir)
         model.to(device)
@@ -190,6 +201,9 @@ def main():
         max_context_len = 1024
     else:
         max_context_len = 2048
+    
+    if 'llama2' in args.llm_dir:
+        max_context_len = 4096
 
     # prepare dataset
     if args.dataset == 'sst2':
