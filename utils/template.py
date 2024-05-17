@@ -34,6 +34,33 @@ def make_prompt(dataset, dataset_name, mode, indices=None):
         prompt += '\n'
     return prompt
 
+def make_full_prompt(data, label2verb, dataset_name, mode="train"):
+    if dataset_name == 'sst2':
+        template_func = template_sst2
+    elif dataset_name == 'subj':
+        template_func = template_subj
+    elif dataset_name == 'agnews':
+        template_func = template_agnews
+    elif dataset_name == 'cb':
+        template_func = template_cb
+    elif dataset_name == 'cr':
+        template_func = template_cr
+    elif dataset_name == 'dbpedia':
+        template_func = template_dbpedia
+    elif dataset_name == 'mpqa':
+        template_func = template_mpqa
+    elif dataset_name == 'mr':
+        template_func = template_mr
+    elif dataset_name == 'rte':
+        template_func = template_rte
+    elif dataset_name == 'sst5':
+        template_func = template_sst5
+    elif dataset_name == 'trec':
+        template_func = template_trec
+    ins = data
+    prompt = template_func(ins, label2verb[ins['label']], mode)
+    return prompt
+
 
 def template_sst2(ins, label, mode):
     if mode == 'train':

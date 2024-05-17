@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=4
 
 LLM=gpt2-large
 LLM_DIR=./llm/${LLM}
@@ -38,38 +38,24 @@ fi
 #         --output_dir ./output/hs_as_feature_with_demo/${LLM} \
 #         --feature_choose all
 
-for DATASET in sst2 subj mpqa agnews cb cr dbpedia mr rte trec; do
+for DATASET in mpqa; do
 # DATASET=dbpedia
 
-if [[ "${array1[@]}" =~ "${DATASET}" ]]; then
-N_DEMO_SHOT=32
-elif [[ "${array2[@]}" =~ "${DATASET}" ]]; then
-N_DEMO_SHOT=16
-elif [[ "${array3[@]}" =~ "${DATASET}" ]]; then
-N_DEMO_SHOT=8
-elif [[ "${array4[@]}" =~ "${DATASET}" ]]; then
-N_DEMO_SHOT=4
-elif [[ "${array5[@]}" =~ "${DATASET}" ]]; then
-N_DEMO_SHOT=2
-else
-N_DEMO_SHOT=1
-fi
 
 N_DEMO_SHOT=1
-for N_TRAIN_SHOT in 32 64; do
-    for SEED in 1 2 3 4 5; do
-    python3 hs_as_feature_with_demo.py \
+for N_TRAIN_SHOT in 8 32 128; do
+    for SEED in  1 2 3 4 5; do
+    python3 get_embedding_from_openai.py \
         --llm_dir ${LLM_DIR} \
         --dataset ${DATASET} \
         --data_dir ${DATA_DIR} \
         --n_train_shot ${N_TRAIN_SHOT} \
         --n_demo_shot ${N_DEMO_SHOT} \
         --seed ${SEED} \
-        --output_dir ./output/hs_as_feature_with_demo/${LLM} \
+        --output_dir ./output/openai_rebuttal \
         --feature_choose all
     done
 done
 
 
 done
-# nohup bash scripts/gpt2-large.sh 2>&1 >>output/hs_as_feature_with_demo/gpt2-large.log &
